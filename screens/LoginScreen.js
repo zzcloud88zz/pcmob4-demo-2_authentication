@@ -1,14 +1,38 @@
 import React from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
+import firebase from "../database/firebaseDB";
+
+const db = firebase.firestore();
+const auth = firebase.auth();
 
 export default function LoginScreen({ navigation }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorText, setErrorText] = useState("");
+
+  function login() {
+    Keyboard.dismiss();
+    auth
+      .signInWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        console.log("Signed in!");
+      })
+      .catch((error) => {
+        console.log("Error!");
+        console.log(error.message);
+        setErrorText(error.message);
+      });
+  }
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
@@ -20,6 +44,8 @@ export default function LoginScreen({ navigation }) {
           autoCompleteType="email"
           autoCorrect={false}
           keyboardType="email-address"
+          value={email}
+          onChangeText={(input) => setEmail(input)}
         />
         <Text style={styles.fieldTitle}>Password</Text>
         <TextInput
@@ -28,10 +54,13 @@ export default function LoginScreen({ navigation }) {
           autoCompleteType="password"
           autoCorrect={false}
           secureTextEntry={true}
+          value={password}
+          onChangeText={(input) => setPassword(input)}
         />
-        <TouchableOpacity onPress={null} style={styles.loginButton}>
+        <TouchableOpacity onPress={login} style={styles.loginButton}>
           <Text style={styles.buttonText}>Log in</Text>
         </TouchableOpacity>
+        <Text style={styles.errorText}>{errorText}</Text>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -73,5 +102,12 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     fontSize: 18,
+  },
+  errorText: {
+    color: "red",
+    marginTop: 20,
+    marginLeft: 20,
+    marginRight: 20,
+    height: 40,
   },
 });
