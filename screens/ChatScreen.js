@@ -85,7 +85,7 @@ export default function ChatScreen({ navigation }) {
       renderUsernameOnMessage={true}
       listViewProps={{
         style: {
-          backgroundColor: "#666",
+          backgroundColor: "lightgrey",
         },
       }}
       user={{
