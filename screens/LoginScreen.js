@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import firebase from "../database/firebaseDB";
 
-const db = firebase.firestore();
 const auth = firebase.auth();
 
 export default function LoginScreen({ navigation }) {

@@ -7,21 +7,22 @@ import {
   TouchableOpacity,
 } from "react-native";
 import firebase from "../database/firebaseDB";
-import { AntDesign } from '@expo/vector-icons';
-import { GiftedChat } from 'react-native-gifted-chat';
+import { AntDesign } from "@expo/vector-icons";
+import { GiftedChat } from "react-native-gifted-chat";
 
-const db = firebase.firestore();
+const db = firebase.firestore().collection("messages");
 const auth = firebase.auth();
 
 export default function ChatScreen({ navigation }) {
   const [messages, setMessages] = useState([]);
 
-  // Handle logging in and out
+  // Handle logging in and out, and setting up the db
   useEffect(() => {
-    firebase.auth().onAuthStateChanged((user) => {
+    // This is the listener for authentication
+    const unsubscribeAuth = auth.onAuthStateChanged((user) => {
       if (user) {
         // logged in
-        navigation.navigate("Chat");
+        navigation.navigate("Chat", { id: user.id, email: user.email });
       } else {
         // logged out, get kicked back to Login page
         navigation.navigate("Login");
@@ -29,45 +30,53 @@ export default function ChatScreen({ navigation }) {
     });
 
     // Put the logout button in the header
-  navigation.setOptions({
-    headerRight: () => (
-      <TouchableOpacity onPress={logout}>
-        <AntDesign name="logout" size={24} color="black" style={{ marginRight: 20 }} />
-      </TouchableOpacity>
-    ),
-  });
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity onPress={logout}>
+          <AntDesign
+            name="logout"
+            size={24}
+            color="black"
+            style={{ marginRight: 20 }}
+          />
+        </TouchableOpacity>
+      ),
+    });
 
-  setMessages([
-    {
-      _id: 2,
-      text: "Hello this is someone else",
-      createdAt: new Date(),
-      user: {
-        _id: 14515151,
-        name: "Someone else",
-        avatar: "https://placeimg.com/141/140/any",
-      },
-    },
-    {
-      _id: 1,
-      text: "Hello developer",
-      createdAt: new Date(),
-      user: {
-        _id: 2194891849184,
-        name: "React Native",
-        avatar: "https://placeimg.com/140/140/any",
-      },
-    },
-  ]);
+    // This loads data from firebase
+    const unsubscribeSnapshot = db
+      .orderBy("createdAt", "desc")
+      .onSnapshot((collectionSnapshot) => {
+        const serverMessages = collectionSnapshot.docs.map((doc) => {
+          const data = doc.data();
+          console.log(data);
+          // Above shows us that createdAt is now an object, with "seconds"
+          // and "nanoseconds". If we just take the former x 1000, we can recreate a JS date...
+          const returnData = {
+            ...doc.data(),
+            createdAt: new Date(data.createdAt.seconds * 1000), // convert convert to JS date object in ms
+          };
+          return returnData;
+        });
+        setMessages(serverMessages);
+      });
+
+    return () => {
+      unsubscribeAuth();
+      unsubscribeSnapshot();
+    };
   }, []);
 
   function logout() {
-    firebase.auth().signOut();
+    auth.signOut();
   }
 
   function sendMessages(newMessages) {
+    // let's see what's inside
     console.log(newMessages);
-    setMessages([...newMessages, ...messages]);
+    const newMessage = newMessages[0];
+    // send the message in there to our db
+    db.add(newMessage);
   }
 
   return (
@@ -81,7 +90,8 @@ export default function ChatScreen({ navigation }) {
         },
       }}
       user={{
-        _id: 1,
+        _id: auth.currentUser ?  auth.currentUser.uid : "unknown user",
+        name: auth.currentUser ?  auth.currentUser.email : "unknown user",
       }}
     />
   );
