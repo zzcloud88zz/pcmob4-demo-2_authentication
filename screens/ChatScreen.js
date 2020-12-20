@@ -60,7 +60,6 @@ export default function ChatScreen({ navigation }) {
         });
         setMessages(serverMessages);
       });
-
     return () => {
       unsubscribeAuth();
       unsubscribeSnapshot();

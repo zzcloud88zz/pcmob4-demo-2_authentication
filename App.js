@@ -6,6 +6,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import LoginScreen from "./screens/LoginScreen";
 import ChatScreen from "./screens/ChatScreen";
+import SignUpScreen from "./screens/SignUpScreen";
 
 const Stack = createStackNavigator();
 
@@ -17,6 +18,11 @@ export default function App() {
         <Stack.Screen
           component={LoginScreen}
           name="Login"
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          component={SignUpScreen}
+          name="signup"
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

@@ -35,7 +35,7 @@ export default function LoginScreen({ navigation }) {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
-        <Text style={styles.title}>Chat App</Text>
+        <Text style={styles.title}>Chatty</Text>
         <Text style={styles.fieldTitle}>Email</Text>
         <TextInput
           style={styles.input}
@@ -60,6 +60,11 @@ export default function LoginScreen({ navigation }) {
           <Text style={styles.buttonText}>Log in</Text>
         </TouchableOpacity>
         <Text style={styles.errorText}>{errorText}</Text>
+          <Text style={styles.signupText}>No account?
+            <TouchableOpacity onPress={() => navigation.navigate("signup")}>
+              <Text style={styles.signupLink}> Sign up now!</Text>
+            </TouchableOpacity>
+          </Text>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -67,14 +72,17 @@ export default function LoginScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: "pink",
     flex: 1,
     justifyContent: "center",
     padding: 24,
+    opacity: 0.8,
   },
   title: {
     fontSize: 36,
     fontWeight: "bold",
     marginBottom: 24,
+    textAlign: "center",
   },
   fieldTitle: {
     fontSize: 18,
@@ -87,11 +95,11 @@ const styles = StyleSheet.create({
     padding: 4,
     height: 36,
     fontSize: 18,
-    backgroundColor: "white",
+    backgroundColor: "whitesmoke",
   },
   loginButton: {
-    backgroundColor: "blue",
-    width: 120,
+    backgroundColor: "chocolate",
+    width: "100%",
     alignItems: "center",
     padding: 18,
     marginTop: 12,
@@ -108,5 +116,17 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginRight: 20,
     height: 40,
+  },
+  signupText: {
+    color: "blue",
+    textAlign: "center",
+    fontSize: 18,
+  },
+  signupLink: {
+    color: "blue",
+    textAlign: "center",
+    fontSize: 18,
+    fontWeight: "bold",
+    textDecorationLine: "underline",
   },
 });
